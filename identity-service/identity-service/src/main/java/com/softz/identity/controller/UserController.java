@@ -1,11 +1,10 @@
 package com.softz.identity.controller;
 
-import com.softz.dto.UserDto;
-import com.softz.dto.request.NewUserRequest;
+import com.softz.identity.dto.ApiResponse;
+import com.softz.identity.dto.UserDto;
+import com.softz.identity.dto.request.NewUserRequest;
 import com.softz.identity.service.UserService;
-import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -18,13 +17,19 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public UserDto createUser(@RequestBody NewUserRequest user) {
-        return userService.createUser(user);
+    public ApiResponse<UserDto> createUser(@RequestBody NewUserRequest newUserRequest) {
+        var userDto = userService.createUser(newUserRequest);
+        return ApiResponse.<UserDto>builder()
+                .result(userDto)
+                .build();
     }
 
     @GetMapping("/users")
-    public List<UserDto> getUsers() {
-        return userService.getUsers();
+    public ApiResponse<List<UserDto>> getUsers() {
+        var users = userService.getUsers();
+        return ApiResponse.<List<UserDto>>builder()
+        .result(users)
+        .build();
     }
 
     @GetMapping("/user/{id}")

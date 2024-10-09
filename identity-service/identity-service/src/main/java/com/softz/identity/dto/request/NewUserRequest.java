@@ -1,4 +1,4 @@
-package com.softz.dto.request;
+package com.softz.identity.dto.request;
 
 public class NewUserRequest {
     private String username;
