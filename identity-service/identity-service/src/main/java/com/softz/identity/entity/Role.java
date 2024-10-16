@@ -11,18 +11,19 @@ import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity(name = "user")
+@Entity(name = "Role")
 @Getter
 @Setter
-public class User {
+public class Role {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-    @Column(name = "username", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci") 
-    private String username;
-    private String password;
+    @Column(name = "name", unique = true) 
+    private String name;
+    @Column(name = "description", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci") 
+    private String description;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Role[] Roles;
+    private Permission[] permissions;
 }
