@@ -31,7 +31,7 @@ public class UserService {
         try {
             user = userRepository.save(user);
         } catch (DataIntegrityViolationException exception) {
-            throw new AppException(ErrorCode.USER_EXISTED);
+            throw new AppException(ErrorCode.USER_EXISTED, user.getUsername());
         }
         return userMapper.toUserDto(user);
     }
@@ -39,13 +39,13 @@ public class UserService {
     public UserDto getUserById(String userId) {
         return userRepository.findById(userId)
                 .map(userMapper::toUserDto)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_ID_NOT_FOUND, userId));
     }
     
     public UserDto getUserByUsername(String username) {
         return userRepository.findByUsername(username)
                 .map(userMapper::toUserDto)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, username));
     }
     
 
