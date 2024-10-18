@@ -6,6 +6,10 @@ import com.softz.identity.dto.request.NewPermissionRequest;
 import com.softz.identity.service.PermissionService;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 @RestController
 public class PermissionController {
@@ -33,14 +37,34 @@ public class PermissionController {
     }
 
     @GetMapping("/permission/{id}")
-    public PermissionDto getUserById(@PathVariable("id") int id) {
-        return permissionService.getPermissionById(id);
+    public ApiResponse<PermissionDto> getUserById(@PathVariable("id") int id) {
+        var result = permissionService.getPermissionById(id);
+        return ApiResponse.<PermissionDto>builder()
+        .result(result)
+        .build();
     }
 
     @GetMapping("/permission/name/{name}")
-    public PermissionDto getUserByUsername(@PathVariable("name") String name) {
-        return permissionService.getPermissionByName(name);
+    public ApiResponse<PermissionDto> getUserByUsername(@PathVariable("name") String name) {
+        var result = permissionService.getPermissionByName(name);
+        return ApiResponse.<PermissionDto>builder()
+        .result(result)
+        .build();
     }
 
+    @PutMapping("permission/{id}")
+    public ApiResponse<PermissionDto> putPermission(@PathVariable int id, @RequestBody NewPermissionRequest request) {
+        var result = permissionService.updatePermission(id, request);
+        return ApiResponse.<PermissionDto>builder()
+        .result(result)
+        .build();
+    }
 
+    @DeleteMapping("permission/{id}")
+    public ApiResponse<Boolean> deletePermission(@PathVariable int id) {
+        var result = permissionService.deletePermission(id);
+        return ApiResponse.<Boolean>builder()
+        .result(result)
+        .build();
+    }
 }

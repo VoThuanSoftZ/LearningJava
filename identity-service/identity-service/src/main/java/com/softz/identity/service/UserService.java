@@ -48,6 +48,19 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, username));
     }
     
+    public UserDto updatePassword(String id, String passowrd) {
+        // Mapping to User entity
+        var ouser = userRepository.findById(id);
+        var user = ouser.get();
+        user.setPassword(passowrd);
+        try {
+            user = userRepository.save(user);
+        } catch (DataIntegrityViolationException exception) {
+            throw new AppException(ErrorCode.USER_EXISTED, user.getUsername());
+        }
+        return userMapper.toUserDto(user);
+    }
+
 
     public List<UserDto> getUsers() {
         return userRepository.findAll()

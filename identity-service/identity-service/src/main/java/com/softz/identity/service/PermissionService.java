@@ -54,6 +54,29 @@ public class PermissionService {
     }
     
 
+    public PermissionDto updatePermission(int id, NewPermissionRequest request) {
+        // Mapping to Permission entity
+        var permission = permissionRepository.findById(id).get();
+        permission.setName(request.getName());
+        permission.setDescription(request.getDescription());
+        try {
+            permission = permissionRepository.save(permission);
+        } catch (DataIntegrityViolationException exception) {
+            throw new AppException(ErrorCode.PERMISSION_NOT_FOUND);
+        }
+        return permissionMapper.toPermissionDto(permission);
+    }
+
+    public Boolean deletePermission(int id) {
+        var permission = permissionRepository.findById(id).get();
+        try {
+            permissionRepository.delete(permission);
+        } catch (DataIntegrityViolationException exception) {
+            throw new AppException(ErrorCode.PERMISSION_EXISTED);
+        }
+        return true;
+    }
+
     public List<PermissionDto> getPermissions() {
         return permissionRepository.findAll()
             .stream()

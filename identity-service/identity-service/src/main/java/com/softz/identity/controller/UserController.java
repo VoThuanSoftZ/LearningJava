@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+
 @RestController
 public class UserController {
 
@@ -45,5 +46,8 @@ public class UserController {
         return userService.getUserByUsername(username);
     }
 
-
+    @PutMapping("user/{id}")
+    public UserDto putPassword(@PathVariable String id, @RequestBody String password) {        
+        return userService.updatePassword(id, password);
+    }
 }

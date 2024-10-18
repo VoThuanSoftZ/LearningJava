@@ -56,6 +56,29 @@ public class RoleService {
                 .orElseThrow(() -> new AppException(ErrorCode.PERMISSION_NOT_FOUND));
     }
     
+    public RoleDto updateRole(int id, NewRoleRequest request) {
+        // Mapping to Permission entity
+        var role = roleRepository.findById(id).get();
+        role.setName(request.getName());
+        role.setDescription(request.getDescription());
+        try {
+            role = roleRepository.save(role);
+        } catch (DataIntegrityViolationException exception) {
+            throw new AppException(ErrorCode.PERMISSION_EXISTED);
+        }
+        return roleMapper.toRoleDto(role);
+    }
+
+    public Boolean deleteRole(int id) {
+        // Mapping to Permission entity
+        var role = roleRepository.findById(id).get();
+        try {
+            roleRepository.delete(role);
+        } catch (DataIntegrityViolationException exception) {
+            throw new AppException(ErrorCode.ROLE_NOT_FOUND);
+        }
+        return true;
+    }
 
     public List<RoleDto> getRoles() {
         return roleRepository.findAll()

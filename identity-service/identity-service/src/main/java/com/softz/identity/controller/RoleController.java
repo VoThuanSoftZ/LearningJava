@@ -1,7 +1,9 @@
 package com.softz.identity.controller;
 
 import com.softz.identity.dto.ApiResponse;
+import com.softz.identity.dto.PermissionDto;
 import com.softz.identity.dto.RoleDto;
+import com.softz.identity.dto.request.NewPermissionRequest;
 import com.softz.identity.dto.request.NewRoleRequest;
 import com.softz.identity.service.RoleService;
 
@@ -43,5 +45,17 @@ public class RoleController {
         return roleService.getRoleByName(name);
     }
 
+    @PutMapping("role/{id}")
+    public RoleDto putPermission(@PathVariable int id, @RequestBody NewRoleRequest request) {
+        return roleService.updateRole(id, request);
+    }
+
+    @DeleteMapping("permission/{id}")
+    public ApiResponse<Boolean> deletePermission(@PathVariable int id) {
+        var result = roleService.deleteRole(id);
+        return ApiResponse.<Boolean>builder()
+        .result(result)
+        .build();
+    }
 
 }
