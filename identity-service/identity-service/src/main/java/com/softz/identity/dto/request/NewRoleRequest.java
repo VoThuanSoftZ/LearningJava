@@ -1,11 +1,17 @@
 package com.softz.identity.dto.request;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
+import lombok.AccessLevel;
 
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NewRoleRequest {
-    private String name;
-    private String description;
+    String name;
+    String description;
+    List<Integer> permissionIds;
 }

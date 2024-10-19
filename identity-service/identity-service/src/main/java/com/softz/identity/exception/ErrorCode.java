@@ -18,7 +18,10 @@ public enum ErrorCode {
     PERMISSION_NOT_FOUND(404101, "Permission not found", HttpStatus.NOT_FOUND),
     PERMISSION_EXISTED(409101, "Permission existed", HttpStatus.CONFLICT),
     ROLE_NOT_FOUND(404102, "Role not found", HttpStatus.NOT_FOUND),
-    ROLE_EXISTED(409103, "Role existed", HttpStatus.CONFLICT)
+    ROLE_EXISTED(409103, "Role existed", HttpStatus.CONFLICT),
+    INVALID_EMAIL(409104, "Invailid email", HttpStatus.BAD_REQUEST),
+    EMAIL_REQUIRED(409104, "Email is required", HttpStatus.BAD_REQUEST),
+    ROLES_REQUIRED(409105, "Roles is required", HttpStatus.BAD_REQUEST)
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

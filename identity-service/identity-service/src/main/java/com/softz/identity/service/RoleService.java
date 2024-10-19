@@ -1,30 +1,23 @@
 package com.softz.identity.service;
 
-import com.softz.identity.dto.PermissionDto;
 import com.softz.identity.dto.RoleDto;
-import com.softz.identity.dto.UserDto;
 import com.softz.identity.dto.request.NewRoleRequest;
-import com.softz.identity.dto.request.NewUserRequest;
 import com.softz.identity.entity.Permission;
-import com.softz.identity.entity.User;
+import com.softz.identity.entity.Role;
 import com.softz.identity.exception.AppException;
 import com.softz.identity.exception.ErrorCode;
-import com.softz.identity.mapper.PermissionMapper;
 import com.softz.identity.mapper.RoleMapper;
-import com.softz.identity.mapper.UserMapper;
-import com.softz.identity.repository.PermissionRepository;
 import com.softz.identity.repository.RoleRepository;
-import com.softz.identity.repository.UserRepository;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -32,16 +25,16 @@ import java.util.List;
 public class RoleService {
     RoleRepository roleRepository;
     RoleMapper roleMapper;
+    //PermissionService permissionService;
 
     public RoleDto createRole(NewRoleRequest request) {
-        // Mapping to Permission entity
-        var role = roleMapper.toRole(request);
+        Role role = roleMapper.toRole(request);
         try {
             role = roleRepository.save(role);
         } catch (DataIntegrityViolationException exception) {
-            throw new AppException(ErrorCode.PERMISSION_EXISTED);
+            throw new AppException(ErrorCode.USER_EXISTED, role.getName());
         }
-        return roleMapper.toRoleDto(role);
+        return roleMapper.toRoleDto(roleRepository.save(role));
     }
 
     public RoleDto getRoleById(int id) {
@@ -85,5 +78,9 @@ public class RoleService {
             .stream()
             .map(roleMapper::toRoleDto)
             .toList();
+    }
+
+    public List<Role> getRoles(List<Integer> roles) {
+        return roleRepository.findByIdIn(roles);
     }
 }

@@ -10,6 +10,9 @@ import com.softz.identity.entity.Role;
 @Mapper(componentModel = "spring")
 public interface RoleMapper {
     @Mapping(target = "id", source = "id")
-    RoleDto toRoleDto(Role user);
-    Role toRole(NewRoleRequest roleDto);
+    RoleDto toRoleDto(Role role);
+
+    @Mapping(target = "permissions", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    Role toRole(NewRoleRequest request);
 }

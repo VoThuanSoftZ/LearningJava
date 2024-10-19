@@ -3,26 +3,35 @@ package com.softz.identity.controller;
 import com.softz.identity.dto.ApiResponse;
 import com.softz.identity.dto.UserDto;
 import com.softz.identity.dto.request.NewUserRequest;
+import com.softz.identity.dto.request.UpdateUserRequest;
 import com.softz.identity.service.UserService;
+import com.softz.identity.service.coordinator.UserCoordinatorService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
 @RestController
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    private final UserCoordinatorService userCoordinatorService;
 
     @PostMapping("/users")
-    public ApiResponse<UserDto> createUser(@RequestBody @Valid NewUserRequest newUserRequest) {
-        var userDto = userService.createUser(newUserRequest);
+    public ApiResponse<UserDto> createUser(@RequestBody @Valid NewUserRequest request) {
+        var userDto = userService.createUser(request);
+        return ApiResponse.<UserDto>builder()
+                .result(userDto)
+                .build();
+    }
+
+    @PostMapping("/user-with-roles")
+    public ApiResponse<UserDto> createUserWithRoles(@RequestBody @Valid NewUserRequest request) {
+        var userDto = userCoordinatorService.createUserWithRoles(request);
         return ApiResponse.<UserDto>builder()
                 .result(userDto)
                 .build();
@@ -37,17 +46,34 @@ public class UserController {
     }
 
     @GetMapping("/user/{id}")
-    public UserDto getUserById(@PathVariable("id") String userId) {
-        return userService.getUserById(userId);
+    public ApiResponse<UserDto> getUserById(@PathVariable("id") String userId) {
+        var result = userService.getUserById(userId);
+        return ApiResponse.<UserDto>builder()
+        .result(result)
+        .build();
     }
 
     @GetMapping("/username/{username}")
-    public UserDto getUserByUsername(@PathVariable("username") String username) {
-        return userService.getUserByUsername(username);
+    public ApiResponse<UserDto> getUserByUsername(@PathVariable("username") String username) {
+        var result = userService.getUserByUsername(username);
+        return ApiResponse.<UserDto>builder()
+        .result(result)
+        .build();
     }
 
+    @PutMapping("user/{id}/password")
+    public ApiResponse<UserDto> putPassword(@PathVariable String id, @RequestBody String password) {        
+        var result = userService.updatePassword(id, password);
+        return ApiResponse.<UserDto>builder()
+        .result(result)
+        .build();
+    }
+    
     @PutMapping("user/{id}")
-    public UserDto putPassword(@PathVariable String id, @RequestBody String password) {        
-        return userService.updatePassword(id, password);
+    public ApiResponse<UserDto> putUser(@PathVariable String id, @RequestBody UpdateUserRequest request) {        
+        var result = userCoordinatorService.updateUserWithRoles(id, request);
+        return ApiResponse.<UserDto>builder()
+        .result(result)
+        .build();
     }
 }
