@@ -6,6 +6,7 @@ import com.softz.identity.dto.UserDto;
 import com.softz.identity.dto.request.NewRoleRequest;
 import com.softz.identity.dto.request.UpdateUserRequest;
 import com.softz.identity.service.RoleService;
+import com.softz.identity.service.coordinator.RoleCoordinatorService;
 import com.softz.identity.service.coordinator.UserCoordinatorService;
 
 import lombok.RequiredArgsConstructor;
@@ -18,11 +19,11 @@ import java.util.List;
 public class RoleController {
 
     private final RoleService roleService;
-    private final UserCoordinatorService userCoordinatorService;
+    private final RoleCoordinatorService roleCoordinatorService;
 
     @PostMapping("/role")
     public ApiResponse<RoleDto> createRole(@RequestBody NewRoleRequest request) {
-        var userDto = roleService.createRole(request);
+        var userDto = roleCoordinatorService.createRole(request);
         return ApiResponse.<RoleDto>builder()
                 .result(userDto)
                 .build();
@@ -30,7 +31,7 @@ public class RoleController {
 
     @PostMapping("/role-with-permissions")
     public ApiResponse<RoleDto> createRoleWithPermission(@RequestBody NewRoleRequest request) {
-        var userDto = userCoordinatorService.createRoleWithPermissions(request);
+        var userDto = roleCoordinatorService.createRole(request);
         return ApiResponse.<RoleDto>builder()
                 .result(userDto)
                 .build();
@@ -70,7 +71,7 @@ public class RoleController {
 
     @PutMapping("role/{id}")
     public ApiResponse<RoleDto> putRole(@PathVariable int id, @RequestBody NewRoleRequest request) {        
-        var result = userCoordinatorService.updateRoleWithPermissions(id, request);
+        var result = roleCoordinatorService.updateRole(id, request);
         return ApiResponse.<RoleDto>builder()
         .result(result)
         .build();

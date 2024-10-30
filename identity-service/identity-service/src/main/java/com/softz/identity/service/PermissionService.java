@@ -3,6 +3,7 @@ package com.softz.identity.service;
 import com.softz.identity.dto.PermissionDto;
 import com.softz.identity.dto.request.NewPermissionRequest;
 import com.softz.identity.entity.Permission;
+import com.softz.identity.entity.Role;
 import com.softz.identity.exception.AppException;
 import com.softz.identity.exception.ErrorCode;
 import com.softz.identity.mapper.PermissionMapper;
@@ -23,6 +24,9 @@ import java.util.List;
 public class PermissionService {
     PermissionRepository permissionRepository;
     PermissionMapper permissionMapper;
+    public List<Permission> findAllById(List<Integer> ids) {
+        return permissionRepository.findAllById(ids);
+    }
 
     public PermissionDto createPermission(NewPermissionRequest request) {
         // Mapping to Permission entity
@@ -30,7 +34,7 @@ public class PermissionService {
         try {
             permission = permissionRepository.save(permission);
         } catch (DataIntegrityViolationException exception) {
-            throw new AppException(ErrorCode.PERMISSION_EXISTED);
+            throw new AppException(ErrorCode.PERMISSION_NOT_FOUND);
         }
         return permissionMapper.toPermissionDto(permission);
     }
@@ -66,7 +70,7 @@ public class PermissionService {
         try {
             permissionRepository.delete(permission);
         } catch (DataIntegrityViolationException exception) {
-            throw new AppException(ErrorCode.PERMISSION_EXISTED);
+            throw new AppException(ErrorCode.PERMISSION_NOT_FOUND);
         }
         return true;
     }

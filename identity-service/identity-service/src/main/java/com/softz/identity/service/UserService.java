@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +25,16 @@ import java.util.List;
 public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
-
+    public User save(User user) {
+        return userRepository.save(user);
+    }    
+    
+    public Optional<User> findById(String id) {
+        return userRepository.findById(id);
+    }
+    public List<User> findAllById(Iterable<String> id) {
+        return userRepository.findAllById(id);
+    }
     public UserDto createUser(NewUserRequest newUserRequest) {
         // Mapping to User entity
         User user = userMapper.toUser(newUserRequest);
@@ -42,9 +52,13 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_ID_NOT_FOUND, userId));
     }
     
-    public UserDto getUserByUsername(String username) {
+    public UserDto getUserDtoByUsername(String username) {
         return userRepository.findByUsername(username)
                 .map(userMapper::toUserDto)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, username));
+    }
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND, username));
     }
     

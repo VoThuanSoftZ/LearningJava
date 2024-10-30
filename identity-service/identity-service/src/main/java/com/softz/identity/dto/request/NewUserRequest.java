@@ -26,5 +26,5 @@ public class NewUserRequest {
     private String email;
     
     @NotEmpty(message = "ROLES_REQUIRED")
-    List<Integer> roleIds;
+    private List<Integer> roleIds;
 }

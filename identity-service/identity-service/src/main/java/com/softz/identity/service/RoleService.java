@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +26,15 @@ public class RoleService {
     RoleRepository roleRepository;
     RoleMapper roleMapper;
     //PermissionService permissionService;
+    public Role save(Role role) {
+        return roleRepository.save(role);
+    }
+    public Optional<Role> findById(int id) {
+        return roleRepository.findById(id);
+    }
+    public List<Role> findAllById(List<Integer> ids) {
+        return roleRepository.findAllById(ids);
+    }
 
     public RoleDto createRole(NewRoleRequest request) {
         Role role = roleMapper.toRole(request);
@@ -57,7 +66,7 @@ public class RoleService {
         try {
             role = roleRepository.save(role);
         } catch (DataIntegrityViolationException exception) {
-            throw new AppException(ErrorCode.PERMISSION_EXISTED);
+            throw new AppException(ErrorCode.ROLE_CONTAINS_INVALID_ITEM);
         }
         return roleMapper.toRoleDto(role);
     }
@@ -68,7 +77,7 @@ public class RoleService {
         try {
             roleRepository.delete(role);
         } catch (DataIntegrityViolationException exception) {
-            throw new AppException(ErrorCode.ROLE_NOT_FOUND);
+            throw new AppException(ErrorCode.ROLE_CONTAINS_INVALID_ITEM);
         }
         return true;
     }

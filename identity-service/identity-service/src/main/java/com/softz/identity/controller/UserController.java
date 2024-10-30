@@ -21,9 +21,9 @@ public class UserController {
     private final UserService userService;
     private final UserCoordinatorService userCoordinatorService;
 
-    @PostMapping("/users")
+    @PostMapping("/users/registration")
     public ApiResponse<UserDto> createUser(@RequestBody @Valid NewUserRequest request) {
-        var userDto = userService.createUser(request);
+        var userDto = userCoordinatorService.createUser(request);
         return ApiResponse.<UserDto>builder()
                 .result(userDto)
                 .build();
@@ -31,7 +31,7 @@ public class UserController {
 
     @PostMapping("/user-with-roles")
     public ApiResponse<UserDto> createUserWithRoles(@RequestBody @Valid NewUserRequest request) {
-        var userDto = userCoordinatorService.createUserWithRoles(request);
+        var userDto = userCoordinatorService.createUser(request);
         return ApiResponse.<UserDto>builder()
                 .result(userDto)
                 .build();
@@ -55,7 +55,7 @@ public class UserController {
 
     @GetMapping("/username/{username}")
     public ApiResponse<UserDto> getUserByUsername(@PathVariable("username") String username) {
-        var result = userService.getUserByUsername(username);
+        var result = userService.getUserDtoByUsername(username);
         return ApiResponse.<UserDto>builder()
         .result(result)
         .build();
