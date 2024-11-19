@@ -7,36 +7,34 @@ import lombok.Getter;
 
 @Getter
 public enum ErrorCode {
-        UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error",
-                        HttpStatus.INTERNAL_SERVER_ERROR),
-        INVALID_INPUT(9000, "Invalid input",
-                        HttpStatus.BAD_REQUEST),
-        UNAUTHENTICATED(9401, "Unauthenticated",
-                        HttpStatus.UNAUTHORIZED),
-        USER_NOT_FOUND(404100, "User not found", HttpStatus.NOT_FOUND),
-        USER_EXISTED(409101, "User existed", HttpStatus.CONFLICT),
-        USER_ID_NOT_FOUND(404102, "User id %s not found", HttpStatus.NOT_FOUND),
-        PERMISSION_NOT_FOUND(404103, "Permission not found", HttpStatus.NOT_FOUND),
+	UNCATEGORIZED_EXCEPTION(9999, HttpStatus.INTERNAL_SERVER_ERROR),
+	METHODARGUMENT_NOTVALIDEXCEPTION(9999, HttpStatus.INTERNAL_SERVER_ERROR),
+	USER_NOT_FOUND(404100, HttpStatus.NOT_FOUND),
+	USER_EXISTED(409100, HttpStatus.CONFLICT),
+	INVALID_USERNAME(100100, HttpStatus.BAD_REQUEST),
+	INVALID_FIELD(100106, HttpStatus.BAD_REQUEST),
+	INVALID_NOTNULL(100106, HttpStatus.BAD_REQUEST),
+	MISSING_MESSAGE_KEY(100101, HttpStatus.BAD_REQUEST),
+	INVALID_DATE_OF_BIRTH(100103, HttpStatus.BAD_REQUEST),
+	INVALID_INPUT(9000, HttpStatus.BAD_REQUEST),
+	USER_ID_NOT_FOUND(404102, HttpStatus.NOT_FOUND),
+	INVALID_EMAIL(404103, HttpStatus.NOT_FOUND),
+	EMAIL_EXISTED(404105, HttpStatus.NOT_FOUND),
+	INVALID_ROLE(404104, HttpStatus.NOT_FOUND),
+	DUPLICATE_IDS(404106, HttpStatus.NOT_FOUND),
+	INVALID_IDS(404107, HttpStatus.BAD_REQUEST),
+	DELETE_USER_FAILED(404109, HttpStatus.BAD_REQUEST),
+	INVALID_PERMISSIONS(404108, HttpStatus.BAD_REQUEST),
+	FIELD_REQUIRED(100106, HttpStatus.BAD_REQUEST),
+	UNAUTHORIZED(9403, HttpStatus.FORBIDDEN),
+	UNAUTHENTICATED(9401, HttpStatus.UNAUTHORIZED);
+	;
 
-        //
-        MISSING_MESSAGE_KEY(100100, "Invalid message", HttpStatus.BAD_REQUEST),
-        INVALID_USERNAME(100101, "Username's length must be between {min} and {max}", HttpStatus.BAD_REQUEST),
-        INVALID_DATE_OF_BIRTH(100102, "User's age must be equal or greater than {min}", HttpStatus.BAD_REQUEST),
-        INVALID_EMAIL_ADDRESS(100103, "Invalid email address", HttpStatus.BAD_REQUEST),
-        ROLE_IS_EMPTY(100104, "Role is empty", HttpStatus.BAD_REQUEST),
-        ROLE_CONTAINS_DUPLICATED_ITEM(100105, "Role contains duplicated item(s)", HttpStatus.BAD_REQUEST),
-        ROLE_CONTAINS_INVALID_ITEM(100105, "Role contains invalid item(s)", HttpStatus.BAD_REQUEST),
-        FIELD_EXISTED(100105, "Field existed %s with value %s", HttpStatus.BAD_REQUEST),
-        FIELD_IS_REQUIRED(100106, "Field is required", HttpStatus.BAD_REQUEST)
-        ;
+	ErrorCode(int code, HttpStatusCode statusCode) {
+		this.code = code;
+		this.statusCode = statusCode;
+	}
 
-        ErrorCode(int code, String message, HttpStatusCode statusCode) {
-                this.code = code;
-                this.message = message;
-                this.statusCode = statusCode;
-        }
-
-        private final int code;
-        private final String message;
-        private final HttpStatusCode statusCode;
+	private final int code;
+	private final HttpStatusCode statusCode;
 }

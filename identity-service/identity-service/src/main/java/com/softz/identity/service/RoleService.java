@@ -49,13 +49,13 @@ public class RoleService {
     public RoleDto getRoleById(int id) {
         return roleRepository.findById(id)
                 .map(roleMapper::toRoleDto)
-                .orElseThrow(() -> new AppException(ErrorCode.PERMISSION_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.INVALID_ROLE));
     }
     
     public RoleDto getRoleByName(String name) {
         return roleRepository.findByName(name)
                 .map(roleMapper::toRoleDto)
-                .orElseThrow(() -> new AppException(ErrorCode.PERMISSION_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.INVALID_ROLE));
     }
     
     public RoleDto updateRole(int id, NewRoleRequest request) {
@@ -66,7 +66,7 @@ public class RoleService {
         try {
             role = roleRepository.save(role);
         } catch (DataIntegrityViolationException exception) {
-            throw new AppException(ErrorCode.ROLE_CONTAINS_INVALID_ITEM);
+            throw new AppException(ErrorCode.INVALID_ROLE);
         }
         return roleMapper.toRoleDto(role);
     }
@@ -77,7 +77,7 @@ public class RoleService {
         try {
             roleRepository.delete(role);
         } catch (DataIntegrityViolationException exception) {
-            throw new AppException(ErrorCode.ROLE_CONTAINS_INVALID_ITEM);
+            throw new AppException(ErrorCode.INVALID_ROLE);
         }
         return true;
     }

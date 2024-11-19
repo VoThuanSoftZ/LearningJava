@@ -1,79 +1,79 @@
 package com.softz.identity.controller;
 
+import jakarta.validation.Valid;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import com.softz.identity.dto.ApiResponse;
+import com.softz.identity.dto.PageData;
 import com.softz.identity.dto.UserDto;
 import com.softz.identity.dto.request.NewUserRequest;
 import com.softz.identity.dto.request.UpdateUserRequest;
+import com.softz.identity.exception.AppException;
+import com.softz.identity.exception.ErrorCode;
 import com.softz.identity.service.UserService;
-import com.softz.identity.service.coordinator.UserCoordinatorService;
-
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.web.bind.annotation.*;
-import java.util.List;
-
+import com.softz.identity.utils.JwtService;
 
 @RestController
-@RequiredArgsConstructor
 public class UserController {
 
+    private final JwtService jwtService;
     private final UserService userService;
-    private final UserCoordinatorService userCoordinatorService;
 
-    @PostMapping("/users/registration")
-    public ApiResponse<UserDto> createUser(@RequestBody @Valid NewUserRequest request) {
-        var userDto = userCoordinatorService.createUser(request);
-        return ApiResponse.<UserDto>builder()
-                .result(userDto)
-                .build();
+    public UserController(JwtService jwtService, UserService userService) {
+        this.jwtService = jwtService;
+        this.userService = userService;
     }
 
-    @PostMapping("/user-with-roles")
-    public ApiResponse<UserDto> createUserWithRoles(@RequestBody @Valid NewUserRequest request) {
-        var userDto = userCoordinatorService.createUser(request);
-        return ApiResponse.<UserDto>builder()
-                .result(userDto)
-                .build();
+    @GetMapping("/user/me")
+    public ApiResponse<UserDto> getCurrentUser(@RequestHeader("Authorization") String authHeader) {
+        UserDto userDto = userService.getMyProfile();
+        return ApiResponse.<UserDto>builder().result(userDto).build();
+    }
+
+    @PostMapping("/users/registration")
+    public ResponseEntity<ApiResponse<UserDto>> createUser(@RequestBody @Valid NewUserRequest newUserRequest) {
+        if (newUserRequest.getRoleIds() == null || newUserRequest.getRoleIds().isEmpty()) {
+            throw new AppException(ErrorCode.INVALID_ROLE);
+        }
+
+        var userDto = userService.createUser(newUserRequest);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.<UserDto>builder().result(userDto).build());
     }
 
     @GetMapping("/users")
-    public ApiResponse<List<UserDto>> getUsers() {
-        var users = userService.getUsers();
-        return ApiResponse.<List<UserDto>>builder()
-        .result(users)
-        .build();
+    public ApiResponse<PageData<UserDto>> getUsers(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "keyword", defaultValue = "") String keyword) {
+        PageData<UserDto> users = userService.getUsers(page, size, keyword);
+        return ApiResponse.<PageData<UserDto>>builder().result(users).build();
     }
 
     @GetMapping("/user/{id}")
     public ApiResponse<UserDto> getUserById(@PathVariable("id") String userId) {
-        var result = userService.getUserById(userId);
-        return ApiResponse.<UserDto>builder()
-        .result(result)
-        .build();
+        UserDto userDto = userService.getUserById(userId);
+        return ApiResponse.<UserDto>builder().result(userDto).build();
     }
 
     @GetMapping("/username/{username}")
     public ApiResponse<UserDto> getUserByUsername(@PathVariable("username") String username) {
-        var result = userService.getUserDtoByUsername(username);
-        return ApiResponse.<UserDto>builder()
-        .result(result)
-        .build();
+        UserDto user = userService.getUserDtoByUsername(username);
+        return ApiResponse.<UserDto>builder().result(user).build();
     }
 
-    @PutMapping("user/{id}/password")
-    public ApiResponse<UserDto> putPassword(@PathVariable String id, @RequestBody String password) {        
-        var result = userService.updatePassword(id, password);
-        return ApiResponse.<UserDto>builder()
-        .result(result)
-        .build();
-    }
-    
     @PutMapping("user/{id}")
-    public ApiResponse<UserDto> putUser(@PathVariable String id, @RequestBody UpdateUserRequest request) {        
-        var result = userCoordinatorService.updateUserWithRoles(id, request);
-        return ApiResponse.<UserDto>builder()
-        .result(result)
-        .build();
+    public ApiResponse<UserDto> putUser(@PathVariable String id, @RequestBody UpdateUserRequest request) {
+        UserDto userDto = userService.updateUserWithRoles(id, request);
+        return ApiResponse.<UserDto>builder().result(userDto).build();
+    }
+
+    @DeleteMapping("/user/{id}")
+    public ApiResponse<Void> deleteUser(@PathVariable String id) {
+        userService.deleteUserById(id);
+        return ApiResponse.<Void>builder().message("User deleted successfully").build();
     }
 }

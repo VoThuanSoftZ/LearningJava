@@ -39,13 +39,13 @@ public class UserCoordinatorService {
 
         // Validate duplicated item(s)
         if (idList.stream().distinct().count() != idList.size()) {
-            throw new AppException(ErrorCode.ROLE_CONTAINS_DUPLICATED_ITEM);
+            throw new AppException(ErrorCode.INVALID_ROLE);
         }
 
         // Validate invalid role(s)
         List<Role> roles = roleService.getRoles(idList);
         if (idList.size() != roles.size()) {
-            throw new AppException(ErrorCode.ROLE_CONTAINS_INVALID_ITEM);
+            throw new AppException(ErrorCode.INVALID_ROLE);
         }
 
         // Mapping to User entity
@@ -67,7 +67,7 @@ public class UserCoordinatorService {
         } catch (DataIntegrityViolationException exception) {
             ConstraintViolationException cause =
                     (ConstraintViolationException) exception.getCause();
-            throw new AppException(ErrorCode.FIELD_EXISTED, cause.getConstraintName(), cause.getMessage());
+            throw new AppException(ErrorCode.INVALID_FIELD, cause.getConstraintName(), cause.getMessage());
         }
 
         // Mapping to UserDto

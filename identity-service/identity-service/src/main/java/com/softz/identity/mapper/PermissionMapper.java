@@ -10,7 +10,8 @@ import com.softz.identity.entity.Permission;
 @Mapper(componentModel = "spring")
 public interface PermissionMapper {
     @Mapping(target = "id", source = "id")
-    PermissionDto toPermissionDto(Permission user);
+    PermissionDto toPermissionDto(Permission permission);
 
-    Permission toPermission(NewPermissionRequest permissionDto);
+    @Mapping(target = "id", ignore = true)
+    Permission toPermission(NewPermissionRequest newPermissionRequest);
 }

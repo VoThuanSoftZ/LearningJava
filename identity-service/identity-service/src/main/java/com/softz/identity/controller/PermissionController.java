@@ -1,16 +1,16 @@
 package com.softz.identity.controller;
 
+import jakarta.validation.Valid;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+
 import com.softz.identity.dto.ApiResponse;
+import com.softz.identity.dto.PageData;
 import com.softz.identity.dto.PermissionDto;
 import com.softz.identity.dto.request.NewPermissionRequest;
 import com.softz.identity.service.PermissionService;
-import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PathVariable;
-
-
+@Slf4j
 @RestController
 public class PermissionController {
 
@@ -20,51 +20,33 @@ public class PermissionController {
         this.permissionService = permissionService;
     }
 
-    @PostMapping("/permission")
-    public ApiResponse<PermissionDto> createPermission(@RequestBody NewPermissionRequest request) {
-        var userDto = permissionService.createPermission(request);
-        return ApiResponse.<PermissionDto>builder()
-                .result(userDto)
-                .build();
+    @PostMapping("/permissions")
+    public ApiResponse<PermissionDto> createPermission(@RequestBody @Valid NewPermissionRequest newPermissionRequest) {
+        var permissionDto = permissionService.createPermission(newPermissionRequest);
+        return ApiResponse.<PermissionDto>builder().result(permissionDto).build();
     }
 
     @GetMapping("/permissions")
-    public ApiResponse<List<PermissionDto>> getPermissions() {
-        var permissions = permissionService.getPermissions();
-        return ApiResponse.<List<PermissionDto>>builder()
-        .result(permissions)
-        .build();
+    public ApiResponse<PageData<PermissionDto>> getPermission(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+        PageData<PermissionDto> permission = permissionService.getPermissions(page, size);
+        return ApiResponse.<PageData<PermissionDto>>builder().result(permission).build();
     }
 
-    @GetMapping("/permission/{id}")
-    public ApiResponse<PermissionDto> getPermissionById(@PathVariable("id") int id) {
-        var result = permissionService.getPermissionById(id);
-        return ApiResponse.<PermissionDto>builder()
-        .result(result)
-        .build();
+
+    @PutMapping("/permission/{id}")
+    public ApiResponse<PermissionDto> updatePermission(
+            @PathVariable("id") Integer id, @RequestBody @Valid NewPermissionRequest updatePermissionRequest) {
+        PermissionDto updatedPermission = permissionService.updatePermission(id, updatePermissionRequest);
+        return ApiResponse.<PermissionDto>builder().result(updatedPermission).build();
     }
 
-    @GetMapping("/permission/name/{name}")
-    public ApiResponse<PermissionDto> getPermissionByName(@PathVariable("name") String name) {
-        var result = permissionService.getPermissionByName(name);
-        return ApiResponse.<PermissionDto>builder()
-        .result(result)
-        .build();
-    }
-
-    @PutMapping("permission/{id}")
-    public ApiResponse<PermissionDto> putPermission(@PathVariable int id, @RequestBody NewPermissionRequest request) {
-        var result = permissionService.updatePermission(id, request);
-        return ApiResponse.<PermissionDto>builder()
-        .result(result)
-        .build();
-    }
-
-    @DeleteMapping("permission/{id}")
-    public ApiResponse<Boolean> deletePermission(@PathVariable int id) {
-        var result = permissionService.deletePermission(id);
-        return ApiResponse.<Boolean>builder()
-        .result(result)
-        .build();
+    @DeleteMapping("/permission/{id}")
+    public ApiResponse<Void> deletePermission(@PathVariable("id") Integer id) {
+        permissionService.deletePermission(id);
+        return ApiResponse.<Void>builder()
+                .message("Permission deleted successfully")
+                .build();
     }
 }

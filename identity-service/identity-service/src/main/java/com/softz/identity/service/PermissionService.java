@@ -1,5 +1,6 @@
 package com.softz.identity.service;
 
+import com.softz.identity.dto.PageData;
 import com.softz.identity.dto.PermissionDto;
 import com.softz.identity.dto.request.NewPermissionRequest;
 import com.softz.identity.entity.Permission;
@@ -13,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 
@@ -34,7 +38,7 @@ public class PermissionService {
         try {
             permission = permissionRepository.save(permission);
         } catch (DataIntegrityViolationException exception) {
-            throw new AppException(ErrorCode.PERMISSION_NOT_FOUND);
+            throw new AppException(ErrorCode.INVALID_PERMISSIONS);
         }
         return permissionMapper.toPermissionDto(permission);
     }
@@ -42,13 +46,13 @@ public class PermissionService {
     public PermissionDto getPermissionById(int id) {
         return permissionRepository.findById(id)
                 .map(permissionMapper::toPermissionDto)
-                .orElseThrow(() -> new AppException(ErrorCode.PERMISSION_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.INVALID_PERMISSIONS));
     }
     
     public PermissionDto getPermissionByName(String name) {
         return permissionRepository.findByName(name)
                 .map(permissionMapper::toPermissionDto)
-                .orElseThrow(() -> new AppException(ErrorCode.PERMISSION_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.INVALID_PERMISSIONS));
     }
     
 
@@ -60,7 +64,7 @@ public class PermissionService {
         try {
             permission = permissionRepository.save(permission);
         } catch (DataIntegrityViolationException exception) {
-            throw new AppException(ErrorCode.PERMISSION_NOT_FOUND);
+            throw new AppException(ErrorCode.INVALID_PERMISSIONS);
         }
         return permissionMapper.toPermissionDto(permission);
     }
@@ -70,7 +74,7 @@ public class PermissionService {
         try {
             permissionRepository.delete(permission);
         } catch (DataIntegrityViolationException exception) {
-            throw new AppException(ErrorCode.PERMISSION_NOT_FOUND);
+            throw new AppException(ErrorCode.INVALID_PERMISSIONS);
         }
         return true;
     }
@@ -81,6 +85,19 @@ public class PermissionService {
             .map(permissionMapper::toPermissionDto)
             .toList();
     }
+
+    public PageData<PermissionDto> getPermissions(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("name").ascending());
+        var pageData = permissionRepository.findAll(pageable);
+        return PageData.<PermissionDto>builder()
+                .currentPage(page)
+                .pageSize(size)
+                .totalPages(pageData.getTotalPages())
+                .totalElements(pageData.getTotalElements())
+                .data(pageData.stream().map(permissionMapper::toPermissionDto).toList())
+                .build();
+    }
+
 
     public List<Permission> getPermissions(List<Integer> permissions) {
         return permissionRepository.findByIdIn(permissions);
